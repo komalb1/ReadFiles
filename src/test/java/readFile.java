@@ -30,6 +30,7 @@ private static WebDriver driver;
             while ((str = in.readLine()) != null) {
                 WebElement enterReg = driver.findElement(By.xpath("//input[@id='vrm-input']"));
                 enterReg.sendKeys(str);
+                CheckRegValue(str);
 
                 WebElement checkBtn = driver.findElement(By.xpath("//button[contains(text(),'Free Car Check')]"));
                 checkBtn.click();
@@ -53,6 +54,21 @@ private static WebDriver driver;
         System.out.println(txtReg+","+txtMake+","+txtModel+","+txtColor+","+txtYear);
 
             }
+    }
+
+    private static void CheckRegValue(String str) {
+        if(str == "DN09HRM"){
+            driver.findElement(By.xpath("//a[@href ='/free-car-check/mot-history/?vrm=DN09HRM']")).click();
+            driver.findElement(By.xpath("//*[@id='m']/div[2]/div[2]/div/div/span/div/div/dl/a")).click();
+            driver.findElement(By.xpath("//*[@id='btn-valuation']")).click();
+            String carValue = driver.findElement(By.xpath("//*[@id='wbac-app-container']/div/div/valuation/section[2]/div/div[1]/div[1]/div[2]/div/div[1]/div/div")).getText();
+            int amount = Integer.parseInt(carValue);
+            if (amount == 3000){
+                System.out.println("Test Fail Value more then £3000. Value is: " + amount);
+            }
+
+
+        }
     }
 
 }
