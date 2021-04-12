@@ -14,20 +14,13 @@ import java.util.concurrent.TimeUnit;
 public class readFile {
 private static WebDriver driver;
     public static void main(String[] args) throws IOException, InterruptedException {
-        System.setProperty("webdriver.chrome.driver","Tests/Readfile/resources/chromedriver");
-        driver = new ChromeDriver();
-        driver.manage().window().maximize();
-        driver.manage().timeouts().pageLoadTimeout(40, TimeUnit.SECONDS);
-        driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
-
-        driver.get("https://cartaxcheck.co.uk");
-        Thread.sleep(5000);  // Let the user actually see something!
-
         List<String> result = new ArrayList<>();
+        header();
         BufferedReader in = null;
-        in = new BufferedReader(new FileReader("inputFile.txt"));
+          in = new BufferedReader(new FileReader("src/test/resources/Properties/inputFile"));
             String str;
             while ((str = in.readLine()) != null) {
+                setDriver();
                 WebElement enterReg = driver.findElement(By.xpath("//input[@id='vrm-input']"));
                 enterReg.sendKeys(str);
                 CheckRegValue(str);
@@ -36,25 +29,46 @@ private static WebDriver driver;
                 checkBtn.click();
                 Thread.sleep(5000);
 
-            OutputStream outputStream = new FileOutputStream("src/test/resources/Properties/outPutFile.txt");
+                FileOutputStream outputStream = new FileOutputStream("src/test/resources/Properties/outPutFile.txt",true);
 
         String txtMake = driver.findElement(By.xpath("//*[@id='m']/div[2]/div[5]/div[1]/div/span/div[2]/dl[2]/dd")).getText();
         String txtReg = driver.findElement(By.xpath("//*[@id='m']/div[2]/div[5]/div[1]/div/span/div[2]/dl[1]/dd")).getText();
         String txtModel = driver.findElement(By.xpath("//*[@id='m']/div[2]/div[5]/div[1]/div/span/div[2]/dl[3]/dd")).getText();
         String txtColor = driver.findElement(By.xpath("//*[@id='m']/div[2]/div[5]/div[1]/div/span/div[2]/dl[4]/dd")).getText();
         String txtYear = driver.findElement(By.xpath("//*[@id='m']/div[2]/div[5]/div[1]/div/span/div[2]/dl[5]/dd")).getText();
-        String header = "REGISTRATION,MAKE,MODEL,COLOR,YEAR";
+
         String content = txtReg+","+txtMake+","+txtModel+","+txtColor+","+txtYear;
-        //outputStream.write("\r\n".getBytes())
-        outputStream.write(header.getBytes());
+        outputStream.write("\n".getBytes());
         outputStream.write(content.getBytes());
         outputStream.close();
 
-        System.out.println("REGISTRATION,MAKE,MODEL,COLOR,YEAR");
-        System.out.println(txtReg+","+txtMake+","+txtModel+","+txtColor+","+txtYear);
+    System.out.println("REGISTRATION,MAKE,MODEL,COLOR,YEAR");
+    System.out.println(txtReg + "," + txtMake + "," + txtModel + "," + txtColor + "," + txtYear);
 
-            }
-    }
+                driver.close();
+           }
+
+      }
+      private static  void header() throws FileNotFoundException,IOException{
+          FileOutputStream outputStream = new FileOutputStream("src/test/resources/Properties/outPutFile.txt",true);
+
+          String header = "REGISTRATION,MAKE,MODEL,COLOR,YEAR";
+          outputStream.write(header.getBytes());
+
+      }
+      private static void setDriver()
+      {
+
+          System.setProperty("webdriver.chrome.driver","src/test/resources/chromedriver.exe");
+          driver = new ChromeDriver();
+          driver.manage().window().maximize();
+          driver.manage().timeouts().pageLoadTimeout(40, TimeUnit.SECONDS);
+          driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
+
+          driver.get("https://cartaxcheck.co.uk");
+          System.out.println(driver.getTitle());
+
+              }
 
     private static void CheckRegValue(String str) {
         if(str == "DN09HRM"){
